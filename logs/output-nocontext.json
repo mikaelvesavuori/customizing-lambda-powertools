@@ -1,0 +1,16 @@
+{
+  "dataSensitivity": "public",
+  "domain": "CustomerAcquisition",
+  "hostPlatform": "aws",
+  "jurisdiction": "EU",
+  "level": "INFO",
+  "lifecycleStage": "production",
+  "message": "asdf",
+  "owner": "MyCompany",
+  "service": "UserSignUp",
+  "system": "ShowroomActivities",
+  "tags": ["typescript", "backend"],
+  "team": "MyDemoTeam",
+  "timestamp": "2022-10-31T12:29:28.814Z",
+  "version": 1
+}

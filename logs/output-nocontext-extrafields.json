@@ -1,0 +1,20 @@
+{
+  "dataSensitivity": "public",
+  "domain": "CustomerAcquisition",
+  "error": true,
+  "hostPlatform": "aws",
+  "httpStatusCode": 400,
+  "id": "d6501c03-60e2-46e3-8c31-42b90c8128c1",
+  "jurisdiction": "EU",
+  "level": "INFO",
+  "lifecycleStage": "production",
+  "message": "Hello World",
+  "owner": "MyCompany",
+  "service": "UserSignUp",
+  "system": "ShowroomActivities",
+  "tags": ["typescript", "backend"],
+  "team": "MyDemoTeam",
+  "timestamp": "2022-10-31T12:36:12.957Z",
+  "timestampEpoch": "1667219772953",
+  "version": 1
+}

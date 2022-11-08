@@ -1,0 +1,26 @@
+{
+  "name": "customizing-lambda-powertools",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "log": "npx ts-node log.ts",
+    "metric": "npx ts-node metric.ts",
+    "trace": "npx ts-node trace.ts"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "5",
+    "@typescript-eslint/parser": "5",
+    "eslint": "8",
+    "eslint-config-prettier": "8",
+    "eslint-plugin-prettier": "4",
+    "prettier": "2",
+    "ts-node": "10",
+    "tslib": "2",
+    "typescript": "4"
+  },
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "1",
+    "@aws-lambda-powertools/metrics": "1",
+    "@aws-lambda-powertools/tracer": "1"
+  }
+}

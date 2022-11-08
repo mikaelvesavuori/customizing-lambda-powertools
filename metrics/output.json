@@ -1,0 +1,15 @@
+{
+  "_aws": {
+    "Timestamp": 1667220954939,
+    "CloudWatchMetrics": [
+      {
+        "Namespace": "serverlessAirline",
+        "Dimensions": [["service"]],
+        "Metrics": [{ "Name": "successfulBooking", "Unit": "Count" }]
+      }
+    ]
+  },
+  "service": "orders",
+  "successfulBooking": 1,
+  "bookingId": "7051cd10-6283-11ec-90d6-0242ac120003"
+}

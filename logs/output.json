@@ -1,0 +1,21 @@
+{
+  "cold_start": true,
+  "dataSensitivity": "public",
+  "domain": "CustomerAcquisition",
+  "function_arn": "arn:aws:lambda:eu-north-1:123412341234:function:somestack-FunctionName",
+  "function_memory_size": 1024,
+  "function_name": "somestack-FunctionName",
+  "function_request_id": "6c933bd2-9535-45a8-b09c-84d00b4f50cc",
+  "hostPlatform": "aws",
+  "jurisdiction": "EU",
+  "level": "INFO",
+  "lifecycleStage": "production",
+  "message": "asdf",
+  "owner": "MyCompany",
+  "service": "UserSignUp",
+  "system": "ShowroomActivities",
+  "tags": ["typescript", "backend"],
+  "team": "MyDemoTeam",
+  "timestamp": "2022-10-31T12:25:55.048Z",
+  "version": 1
+}
