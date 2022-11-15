@@ -110,19 +110,22 @@ export const handler = async (event: any, context: any): Promise<void> => {
 
   const timeNow = Date.now();
 
+  const requiredMetadata = {
+    level: 'INFO', // Has to be inferred from actual use
+    error: false, // Set dynamically based on actual use
+    httpStatusCode: 200, // Set dynamically based on actual use
+    id: randomUUID(),
+    timestamp: new Date(timeNow).toISOString(),
+    timestampEpoch: `${timeNow}`
+  };
+
   // Start logger with our custom metadata etc.
   const logger = new Logger({
     serviceName: staticMetadata.service,
     persistentLogAttributes: {
       ...dynamicMetadata,
       ...staticMetadata,
-      // Missing fields
-      level: 'INFO', // Has to be inferred from actual use
-      error: false, // Set dynamically based on actual use
-      httpStatusCode: 200, // Set dynamically based on actual use
-      id: randomUUID(),
-      timestamp: new Date(timeNow).toISOString(),
-      timestampEpoch: `${timeNow}`
+      ...requiredMetadata
     }
   });
 
