@@ -59,16 +59,60 @@ const event = {
   isBase64Encoded: false
 };
 
+// Mocked AWS API Gateway context
+const context = {
+  callbackWaitsForEmptyEventLoop: {},
+  succeed: {},
+  fail: {},
+  done: {},
+  functionVersion: '$LATEST',
+  functionName: 'somestack-FunctionName',
+  memoryLimitInMB: '1024',
+  logGroupName: '/aws/lambda/somestack-FunctionName',
+  logStreamName: '2022/07/09/[$LATEST]159282acddb84ca0bc0d5f325ea01343',
+  clientContext: '',
+  identity: '',
+  invokedFunctionArn: 'arn:aws:lambda:eu-north-1:123412341234:function:somestack-FunctionName',
+  awsRequestId: '6c933bd2-9535-45a8-b09c-84d00b4f50cc',
+  getRemainingTimeInMillis: {}
+};
+
 export const handler = async (event: any): Promise<void> => {
   // Static metadata
-  const metadata = {
-    serviceName: 'MyService'
+  const staticMetadata = {
+    dataSensitivity: 'public',
+    domain: 'CustomerAcquisition',
+    hostPlatform: 'aws',
+    jurisdiction: 'EU',
+    owner: 'MyCompany',
+    service: 'UserSignUp',
+    system: 'ShowroomActivities',
+    tags: ['typescript', 'backend'],
+    team: 'MyDemoTeam'
+  };
+
+  // Dynamic metadata from environment
+  const dynamicMetadata = {
+    accountId: event.requestContext.accountId,
+    correlationId: context.awsRequestId, // This is rudimentary and should also check for ID coming through headers etc!
+    functionMemorySize: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE || context.memoryLimitInMB,
+    functionName: process.env.AWS_LAMBDA_FUNCTION_NAME || context.functionName,
+    functionVersion: process.env.AWS_LAMBDA_FUNCTION_VERSION || context.functionVersion,
+    region: process.env.AWS_REGION || 'UNKNOWN',
+    resource: event.path, // This case is only valid for HTTP not for EventBridge etc!
+    runtime: process.env.AWS_EXECUTION_ENV || 'UNKNOWN',
+    stage: event.requestContext.stage,
+    timestampRequest: event.requestContext.requestTimeEpoch.toString(),
+    user: event.requestContext.identity.user,
+    viewerCountry: event.headers['CloudFront-Viewer-Country'] // This may or may not be present
   };
 
   const startTime = Date.now();
 
   // Setup tracer and create a nested subsegment
-  const tracer = new Tracer(metadata);
+  const tracer = new Tracer({
+    serviceName: staticMetadata.service
+  });
   const segment = tracer.getSegment();
   const spanName = 'Call the User service and fetch a response';
   const subsegment = segment.addNewSubsegment(spanName);
@@ -81,25 +125,25 @@ export const handler = async (event: any): Promise<void> => {
 
   const endTime = Date.now();
 
-  // Dynamic metadata from environment
-  const dynamicMetadata = {
-    name: spanName,
-    timestamp: new Date(Date.now()).toISOString(),
-    timestampEpoch: Date.now().toString(),
-    durationMs: endTime - startTime,
-    spanName: spanName,
-    spanId: randomUUID(),
-    traceId: randomUUID(),
+  const requiredMetadata = {
     attributes: {}, // Any extra attributes
     correlationId: event.requestContext.requestId,
-    service: metadata.serviceName
+    durationMs: endTime - startTime,
+    spanId: randomUUID(),
+    spanName: spanName,
+    timestamp: new Date(startTime).toISOString(),
+    timestampEpoch: `${startTime}`,
+    traceId: randomUUID()
   };
 
-  // Add standard dynamic metadata
-  Object.entries(dynamicMetadata).forEach((metadata: any) => {
+  const addMetadata = (metadata: any) => {
     const [key, value] = metadata;
     tracer.putMetadata(key, value);
-  });
+  };
+
+  Object.entries(dynamicMetadata).forEach((metadata: any) => addMetadata(metadata));
+  Object.entries(staticMetadata).forEach((metadata: any) => addMetadata(metadata));
+  Object.entries(requiredMetadata).forEach((metadata: any) => addMetadata(metadata));
 
   // Finish or close the nested subsegment
   subsegment.close();

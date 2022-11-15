@@ -80,46 +80,49 @@ const context = {
 // Mocked Lambda handler
 export const handler = async (event: any, context: any): Promise<void> => {
   // Static metadata
-  const metadata = {
-    owner: 'MyCompany',
-    hostPlatform: 'aws',
-    domain: 'CustomerAcquisition',
-    system: 'ShowroomActivities',
-    service: 'UserSignUp',
-    team: 'MyDemoTeam',
-    tags: ['typescript', 'backend'],
+  const staticMetadata = {
     dataSensitivity: 'public',
-    jurisdiction: 'EU'
+    domain: 'CustomerAcquisition',
+    hostPlatform: 'aws',
+    jurisdiction: 'EU',
+    owner: 'MyCompany',
+    service: 'UserSignUp',
+    system: 'ShowroomActivities',
+    tags: ['typescript', 'backend'],
+    team: 'MyDemoTeam'
   };
 
   // Dynamic metadata from environment
   const dynamicMetadata = {
     accountId: event.requestContext.accountId,
-    region: process.env.AWS_REGION || 'UNKNOWN',
-    runtime: process.env.AWS_EXECUTION_ENV || 'UNKNOWN',
-    user: event.requestContext.identity.user,
-    stage: event.requestContext.stage,
+    correlationId: context.awsRequestId, // This is rudimentary and should also check for ID coming through headers etc!
+    functionMemorySize: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE || context.memoryLimitInMB,
     functionName: process.env.AWS_LAMBDA_FUNCTION_NAME || context.functionName,
     functionVersion: process.env.AWS_LAMBDA_FUNCTION_VERSION || context.functionVersion,
-    functionMemorySize: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE || context.memoryLimitInMB,
-    correlationId: context.awsRequestId, // This is rudimentary and should also check for ID coming through headers etc!
-    timestampRequest: event.requestContext.requestTimeEpoch.toString(),
+    region: process.env.AWS_REGION || 'UNKNOWN',
     resource: event.path, // This case is only valid for HTTP not for EventBridge etc!
+    runtime: process.env.AWS_EXECUTION_ENV || 'UNKNOWN',
+    stage: event.requestContext.stage,
+    timestampRequest: event.requestContext.requestTimeEpoch.toString(),
+    user: event.requestContext.identity.user,
     viewerCountry: event.headers['CloudFront-Viewer-Country'] // This may or may not be present
   };
 
+  const timeNow = Date.now();
+
   // Start logger with our custom metadata etc.
   const logger = new Logger({
-    serviceName: metadata.service,
+    serviceName: staticMetadata.service,
     persistentLogAttributes: {
-      ...metadata,
       ...dynamicMetadata,
+      ...staticMetadata,
       // Missing fields
       level: 'INFO', // Has to be inferred from actual use
       error: false, // Set dynamically based on actual use
       httpStatusCode: 200, // Set dynamically based on actual use
       id: randomUUID(),
-      timestampEpoch: Date.now().toString()
+      timestamp: new Date(timeNow).toISOString(),
+      timestampEpoch: `${timeNow}`
     }
   });
 
